@@ -146,9 +146,30 @@ class SinaMiniBlogClient(OAuthClient):
     token = self._get_auth_token()
     return "http://api.t.sina.com.cn/oauth/authorize?oauth_token=%s" % token
 
+  def update_status(self, status,auth_token,auth_verifier=""):
+    auth_token = urlunquote(auth_token)
+    auth_verifier = urlunquote(auth_verifier)
+    global auth_secret
+    response = self.make_request(self.access_url,
+                                token=auth_token,
+                                secret=auth_secret,
+                                additional_params={"oauth_verifier":auth_verifier})
+
+    result = self._extract_credentials(response)
+    data = self._update_status(result["token"], result["secret"],status)
+    return data
+    
+  def _update_status(self, access_token, access_secret,status):
+    response = self.make_request(
+    "http://api.t.sina.com.cn/statuses/update.json",
+    token=access_token, secret=access_secret, additional_params={'status':urlquote(str(status), "")},protected=True,method=urlfetch.POST)
+    data = json.loads(response.content)
+    return data
+      
   def _lookup_user_info(self, access_token, access_secret):
     response = self.make_request(
         "http://api.t.sina.com.cn/account/verify_credentials.json",
         token=access_token, secret=access_secret, protected=True)
     data = json.loads(response.content)
     return data
+    

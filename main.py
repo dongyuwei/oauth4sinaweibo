@@ -22,8 +22,10 @@ class MainHandler(webapp.RequestHandler):
     if mode == "verify":
       auth_token = self.request.get("oauth_token")
       auth_verifier = self.request.get("oauth_verifier")
-      user_info = client.get_user_info(auth_token, auth_verifier)
-      return self.response.out.write(user_info)
+      #user_info = client.get_user_info(auth_token, auth_verifier)
+      #return self.response.out.write(user_info)
+      res = client.update_status('test飞信机器人',auth_token,auth_verifier)
+      return self.response.out.write(res)
     
     self.response.out.write("<a href='/login'>Login via sina miniblog</a>")
 
